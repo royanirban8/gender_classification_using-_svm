@@ -19,40 +19,69 @@ ALGORITHM:
 Code:
 
 import numpy as np
+
 import pandas as pd
+
 import matplotlib.pyplot as plt
+
 import os
+
 from skimage import io,color
+
 %matplotlib inline
 
 numImg = 20
+
 numSbj = 19
+
 A = np.zeros([2 * numImg * numSbj,180 * 200])
+
 y = np.zeros([2 * numImg * numSbj])
+
 c = 0
 
 fPath = 'male'
+
 j = numSbj
+
 for i in os.listdir(fPath):
+
     if(j <= 0):
+    
         break
+        
     j = j - 1
+    
     for f in os.listdir(fPath + '/' + i):
+    
         imgPath = fPath + '/' + i + '/' + f
+        
         A[c, :] = color.rgb2gray(io.imread(imgPath)).reshape([1,180 * 200])
+        
         y[c] = 0
+        
         c = c + 1
 
 fPath = 'female'
+
 j = numSbj
+
 for i in os.listdir(fPath):
+
     if(j <= 0):
+    
         break
+        
     j = j - 1
+    
     for f in os.listdir(fPath + '/' + i):
+    
         imgPath = fPath + '/' + i + '/' + f
+        
         A[c, :] = color.rgb2gray(io.imread(imgPath)).reshape([1,180 * 200])
+        
         y[c] = 1
+        
         c = c + 1
  
  from sklearn.preprocessing import StandardScaler
@@ -72,15 +101,21 @@ for i in os.listdir(fPath):
  A = p.transform(A)
  
 df1 = pd.DataFrame(A)
+
 d = {'o/p':y}
+
 df2 = pd.DataFrame(d)
+
 df = df1.join(df2)
+
 df.head()
 
 from sklearn.model_selection import train_test_split
 
 X = df.drop('o/p',axis=1)
+
 y = df['o/p']
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=101)
 
 SVM
@@ -116,7 +151,9 @@ Comparison:
 from sklearn.metrics import accuracy_score
 
 print('accuracy of svm with gaussian rbf kernel =',accuracy_score(y_pred_rbf,y_test))
+
 print('accuracy of svm with cubic poly kernel =',accuracy_score(y_pred_poly,y_test))
+
 print('accuracy of svm with linear kernel =',accuracy_score(y_pred_linear,y_test))
 
 
