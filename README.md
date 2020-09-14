@@ -18,143 +18,143 @@ ALGORITHM:
 
 Code:
 
-import numpy as np
+    import numpy as np
 
-import pandas as pd
+    import pandas as pd
 
-import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
 
-import os
+    import os
 
-from skimage import io,color
+    from skimage import io,color
 
-%matplotlib inline
+    %matplotlib inline
 
-numImg = 20
+    numImg = 20
 
-numSbj = 19
+    numSbj = 19
 
-A = np.zeros([2 * numImg * numSbj,180 * 200])
+    A = np.zeros([2 * numImg * numSbj,180 * 200])
 
-y = np.zeros([2 * numImg * numSbj])
+    y = np.zeros([2 * numImg * numSbj])
 
-c = 0
+    c = 0
 
-fPath = 'male'
+    fPath = 'male'
 
-j = numSbj
+    j = numSbj
 
-for i in os.listdir(fPath):
+    for i in os.listdir(fPath):
 
-    if(j <= 0):
+        if(j <= 0):
     
-        break
+            break
         
-    j = j - 1
+        j = j - 1
     
-    for f in os.listdir(fPath + '/' + i):
+        for f in os.listdir(fPath + '/' + i):
     
-        imgPath = fPath + '/' + i + '/' + f
+            imgPath = fPath + '/' + i + '/' + f
         
-        A[c, :] = color.rgb2gray(io.imread(imgPath)).reshape([1,180 * 200])
+            A[c, :] = color.rgb2gray(io.imread(imgPath)).reshape([1,180 * 200])
         
-        y[c] = 0
+            y[c] = 0
         
-        c = c + 1
+            c = c + 1
 
-fPath = 'female'
+    fPath = 'female'
 
-j = numSbj
+    j = numSbj
 
-for i in os.listdir(fPath):
+    for i in os.listdir(fPath):
 
-    if(j <= 0):
+        if(j <= 0):
     
-        break
+            break
         
-    j = j - 1
+        j = j - 1
     
-    for f in os.listdir(fPath + '/' + i):
+        for f in os.listdir(fPath + '/' + i):
     
-        imgPath = fPath + '/' + i + '/' + f
+            imgPath = fPath + '/' + i + '/' + f
         
-        A[c, :] = color.rgb2gray(io.imread(imgPath)).reshape([1,180 * 200])
+            A[c, :] = color.rgb2gray(io.imread(imgPath)).reshape([1,180 * 200])
         
-        y[c] = 1
+            y[c] = 1
         
-        c = c + 1
+            c = c + 1
  
- from sklearn.preprocessing import StandardScaler
+    from sklearn.preprocessing import StandardScaler
  
- scaler = StandardScaler()
+    scaler = StandardScaler()
  
- scaler.fit(A)
+    scaler.fit(A)
  
- A = scaler.transform(A)
+    A = scaler.transform(A)
  
- from sklearn.decomposition import PCA
+    from sklearn.decomposition import PCA
  
- p = PCA(n_components=4,random_state=101)
+    p = PCA(n_components=4,random_state=101)
  
- p.fit(A)
+    p.fit(A)
  
- A = p.transform(A)
+    A = p.transform(A)
  
-df1 = pd.DataFrame(A)
+    df1 = pd.DataFrame(A)
 
-d = {'o/p':y}
+    d = {'o/p':y}
 
-df2 = pd.DataFrame(d)
+    df2 = pd.DataFrame(d)
 
-df = df1.join(df2)
+    df = df1.join(df2)
 
-df.head()
+    df.head()
 
-from sklearn.model_selection import train_test_split
+    from sklearn.model_selection import train_test_split
 
-X = df.drop('o/p',axis=1)
+    X = df.drop('o/p',axis=1)
 
-y = df['o/p']
+    y = df['o/p']
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=101)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=101)
 
 SVM
 
 (i) kernel = rbf
 
-from sklearn.svm import SVC
+    from sklearn.svm import SVC
 
-s_rbf = SVC(C=1.0,kernel='rbf',gamma='scale',random_state=101)
+    s_rbf = SVC(C=1.0,kernel='rbf',gamma='scale',random_state=101)
 
-s_rbf.fit(X_train,y_train)
+    s_rbf.fit(X_train,y_train)
 
-y_pred_rbf = s_rbf.predict(X_test)
+    y_pred_rbf = s_rbf.predict(X_test)
 
 (ii)kernel=cubic polynomial
 
-s_poly = SVC(C=1.0,kernel='poly',degree=3,gamma='scale',random_state=101)
+    s_poly = SVC(C=1.0,kernel='poly',degree=3,gamma='scale',random_state=101)
 
-s_poly.fit(X_train,y_train)
+    s_poly.fit(X_train,y_train)
 
-y_pred_poly = s_poly.predict(X_test)
+    y_pred_poly = s_poly.predict(X_test)
 
 (iii)kernel=linear
 
-s_linear = SVC(C=1.0,kernel='linear',degree=3,gamma='scale',random_state=101)
+    s_linear = SVC(C=1.0,kernel='linear',degree=3,gamma='scale',random_state=101)
 
-s_linear.fit(X_train,y_train)
+    s_linear.fit(X_train,y_train)
 
-y_pred_linear = s_linear.predict(X_test)
+    y_pred_linear = s_linear.predict(X_test)
 
 Comparison:
 
-from sklearn.metrics import accuracy_score
+    from sklearn.metrics import accuracy_score
 
-print('accuracy of svm with gaussian rbf kernel =',accuracy_score(y_pred_rbf,y_test))
+    print('accuracy of svm with gaussian rbf kernel =',accuracy_score(y_pred_rbf,y_test))
 
-print('accuracy of svm with cubic poly kernel =',accuracy_score(y_pred_poly,y_test))
+    print('accuracy of svm with cubic poly kernel =',accuracy_score(y_pred_poly,y_test))
 
-print('accuracy of svm with linear kernel =',accuracy_score(y_pred_linear,y_test))
+    print('accuracy of svm with linear kernel =',accuracy_score(y_pred_linear,y_test))
 
 
 
